@@ -57,7 +57,7 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
         <BoxHelpfulHints column paddedRatio={3} overflowY="auto" scroll>
           <Box left>
             <Text extraLarge bold>
-              {t("emptyWorkbench.helpfulHints")}
+
             </Text>
           </Box>
           <Spacing bottom={4} />
@@ -65,7 +65,7 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
             <HelpfulHintsIcon />
             <Spacing right={1} />
             <Text medium light>
-              {t("emptyWorkbench.helpfulHintsOne")}
+
             </Text>
           </Box>
           <Spacing bottom={3} />
@@ -73,7 +73,7 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
             <HelpfulHintsIcon />
             <Spacing right={1} />
             <Text medium light>
-              {t("emptyWorkbench.helpfulHintsTwo")}
+
             </Text>
           </Box>
           <Spacing bottom={3} />
@@ -81,7 +81,7 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
             <HelpfulHintsIcon />
             <Spacing right={1} />
             <Text medium light>
-              {t("emptyWorkbench.helpfulHintsThree")}
+
             </Text>
           </Box>
           <ResponsiveSpacing />
