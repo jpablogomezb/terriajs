@@ -49,40 +49,29 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
       <Box column fullWidth justifySpaceBetween>
         <Box centered column>
           <ResponsiveSpacing />
-          <Text large color={props.theme.textLightDimmed}>
+          <Text centered large color={props.theme.textLightDimmed}>
             {t("emptyWorkbench.emptyArea")}
           </Text>
           <ResponsiveSpacing />
         </Box>
         <BoxHelpfulHints column paddedRatio={3} overflowY="auto" scroll>
-          <Box left>
-            <Text extraLarge bold>
-
-            </Text>
+          <Box centered>
+            <Text extraLarge bold></Text>
           </Box>
           <Spacing bottom={4} />
           <Box>
-            <HelpfulHintsIcon />
             <Spacing right={1} />
-            <Text medium light>
-
-            </Text>
+            <Text medium light></Text>
           </Box>
           <Spacing bottom={3} />
           <Box>
-            <HelpfulHintsIcon />
             <Spacing right={1} />
-            <Text medium light>
-
-            </Text>
+            <Text medium light></Text>
           </Box>
           <Spacing bottom={3} />
           <Box>
-            <HelpfulHintsIcon />
             <Spacing right={1} />
-            <Text medium light>
-
-            </Text>
+            <Text medium light></Text>
           </Box>
           <ResponsiveSpacing />
         </BoxHelpfulHints>
@@ -171,7 +160,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
-            <SidePanelButton
+            {/* <SidePanelButton
               ref={refForUploadData}
               onClick={onAddLocalDataClicked}
               title={t("addData.load")}
@@ -183,7 +172,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
                 light
                 styledWidth={"20px"}
               />
-            </SidePanelButton>
+            </SidePanelButton>*/}
           </Box>
           <Spacing bottom={1} />
         </div>
