@@ -49,9 +49,7 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
       <Box centered column fullWidth justifySpaceBetween>
         <Box centered column>
           <ResponsiveSpacing />
-          <Text large color={props.theme.textLightDimmed}>
-            {t("emptyWorkbench.emptyArea")}
-          </Text>
+          <Text large color={props.theme.textLightDimmed}></Text>
           <ResponsiveSpacing />
         </Box>
         <BoxHelpfulHints column paddedRatio={3} overflowY="auto" scroll>
@@ -156,7 +154,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               onClick={onAddDataClicked}
               title={addData}
               btnText={addData}
-              styledWidth={"200px"}
+              styledWidth={"330px"}
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
