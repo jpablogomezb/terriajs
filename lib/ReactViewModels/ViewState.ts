@@ -38,6 +38,7 @@ import SearchState from "./SearchState";
 
 export const DATA_CATALOG_NAME = "data-catalog";
 export const USER_DATA_NAME = "my-data";
+export const EBA_ANALYSIS_TOOL_NAME = "eba-analysis-tools"
 
 // check showWorkbenchButton delay and transforms
 // export const WORKBENCH_RESIZE_ANIMATION_DURATION = 250;
@@ -538,6 +539,12 @@ export default class ViewState {
   openUserData() {
     this.explorerPanelIsVisible = true;
     this.activeTabCategory = USER_DATA_NAME;
+  }
+
+  @action
+  openEBAAnalysisTool() {
+    this.explorerPanelIsVisible = true;
+    this.activeTabCategory = "data-catalog";
   }
 
   @action
