@@ -104,18 +104,19 @@ const SidePanelButton = React.forwardRef<
 
 export const EXPLORE_MAP_DATA_NAME = "ExploreMapDataButton";
 export const SIDE_PANEL_UPLOAD_BUTTON_NAME = "SidePanelUploadButton";
-export const SIDE_PANEL_EBA_TOOL_NAME = "SidePanelEBAToolButton";
+export const SIDE_PANEL_SCENARIO_ANALYSIS_NAME =
+  "SidePanelScenarioAnalysisButton";
 
 interface SidePanelProps {
   viewState: ViewState;
   refForExploreMapData: React.Ref<HTMLButtonElement>;
   refForUploadData: React.Ref<HTMLButtonElement>;
-  refForEBAAnalysTool : React.Ref<HTMLButtonElement>;
+  refForScenarioAnalysis: React.Ref<HTMLButtonElement>;
   theme: DefaultTheme;
 }
 
 const SidePanel = observer<React.FC<SidePanelProps>>(
-  ({ viewState, theme, refForExploreMapData, refForEBAAnalysTool }) => {
+  ({ viewState, theme, refForExploreMapData, refForScenarioAnalysis }) => {
     const terria = viewState.terria;
     const { t } = useTranslation();
 
@@ -135,12 +136,12 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       viewState.openUserData();
     };
 
-    const onAddEBAAnalysisToolClicked: React.MouseEventHandler<HTMLButtonElement> = (
-      e
-    ) => {
+    const onAddScenarioAnalysisClicked: React.MouseEventHandler<
+      HTMLButtonElement
+    > = (e) => {
       e.stopPropagation();
       viewState.setTopElement(ExplorerWindowElementName);
-      viewState.openEBAAnalysisTool();
+      viewState.openScenarioAnalysis();
     };
 
     const addData = t("addData.addDataBtnText");
@@ -169,7 +170,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
-            
+
             {/* <SidePanelButton
               ref={refForEBAAnalysTool}
               onClick={onAddEBAAnalysisToolClicked}
@@ -187,10 +188,10 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
           <Spacing bottom={2} />
           <Box justifySpaceBetween>
             <SidePanelButton
-              ref={refForEBAAnalysTool}
-              onClick={onAddEBAAnalysisToolClicked}
-              title="EBA Analysis Tool"
-              btnText="EBA Analysis Tool"
+              ref={refForScenarioAnalysis}
+              onClick={onAddScenarioAnalysisClicked}
+              title="Scenario Analysis"
+              btnText="Scenario Analysis"
               styledWidth={"340px"}
             >
               <StyledIcon glyph={Icon.GLYPHS.bulb} light styledWidth={"20px"} />
@@ -219,18 +220,21 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
 // Used to create two refs for <SidePanel /> to consume, rather than
 // using the withTerriaRef() HOC twice, designed for a single ref
 const SidePanelWithRefs: React.FC<
-  Omit<SidePanelProps, "refForExploreMapData" | "refForUploadData"| "refForEBAAnalysTool">
+  Omit<
+    SidePanelProps,
+    "refForExploreMapData" | "refForUploadData" | "refForScenarioAnalysis"
+  >
 > = (props) => {
   const refForExploreMapData = useRefForTerria(
     EXPLORE_MAP_DATA_NAME,
     props.viewState
   );
   const refForUploadData = useRefForTerria(
-    SIDE_PANEL_UPLOAD_BUTTON_NAME, 
+    SIDE_PANEL_UPLOAD_BUTTON_NAME,
     props.viewState
   );
-  const refForEBAAnalysTool = useRefForTerria(
-    SIDE_PANEL_EBA_TOOL_NAME,
+  const refForScenarioAnalys = useRefForTerria(
+    SIDE_PANEL_SCENARIO_ANALYSIS_NAME,
     props.viewState
   );
   return (
@@ -240,7 +244,9 @@ const SidePanelWithRefs: React.FC<
         refForExploreMapData as React.Ref<HTMLButtonElement>
       }
       refForUploadData={refForUploadData as React.Ref<HTMLButtonElement>}
-      refForEBAAnalysTool={refForEBAAnalysTool as React.Ref<HTMLButtonElement>}
+      refForScenarioAnalysis={
+        refForScenarioAnalys as React.Ref<HTMLButtonElement>
+      }
     />
   );
 };

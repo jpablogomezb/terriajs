@@ -40,7 +40,7 @@ import SearchState from "./SearchState";
 
 export const DATA_CATALOG_NAME = "data-catalog";
 export const USER_DATA_NAME = "my-data";
-export const EBA_ANALYSIS_TOOL_NAME = "eba-analysis-tools"
+export const SCENARIO_ANALYSIS_NAME = "tablist--data-catalog-Scenario Analysis";
 
 // check showWorkbenchButton delay and transforms
 // export const WORKBENCH_RESIZE_ANIMATION_DURATION = 250;
@@ -575,9 +575,9 @@ export default class ViewState {
   }
 
   @action
-  openEBAAnalysisTool() {
+  openScenarioAnalysis() {
     this.explorerPanelIsVisible = true;
-    this.activeTabCategory = "data-catalog";
+    this.activeTabCategory = SCENARIO_ANALYSIS_NAME;
   }
 
   @action
