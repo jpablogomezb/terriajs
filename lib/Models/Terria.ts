@@ -103,7 +103,8 @@ import InitSource, {
 } from "./InitSource";
 import Internationalization, {
   I18nStartOptions,
-  LanguageConfiguration
+  LanguageConfiguration,
+  AuthConfiguration
 } from "./Internationalization";
 import MapInteractionMode from "./MapInteractionMode";
 import NoViewer from "./NoViewer";
@@ -313,6 +314,16 @@ interface ConfigParameters {
    * Prefix to which `:story-id` is added to fetch JSON for stories when using /story/:story-id routes. Should end in /
    */
   storyRouteUrlPrefix?: string;
+
+  /**
+   * Whether the login is enabled. If false login function button won't be available.
+   */
+  loginEnabled?: boolean;
+
+  /**
+   * Authentication Configuration that is used to authenticate with data provider website.
+   */
+  AuthConfiguration?: AuthConfiguration;
 
   /**
    * For Console Analytics
@@ -540,6 +551,8 @@ export default class Terria {
     ],
     printDisclaimer: undefined,
     storyRouteUrlPrefix: undefined,
+    AuthConfiguration: undefined,
+    loginEnabled: undefined,
     enableConsoleAnalytics: undefined,
     googleAnalyticsOptions: undefined,
     relatedMaps: defaultRelatedMaps,
@@ -814,7 +827,7 @@ export default class Terria {
     type: Class<T>,
     id: string
   ): T | undefined {
-    let model = this.getModelById(type, id);
+    const model = this.getModelById(type, id);
     if (model) {
       return model;
     } else {
