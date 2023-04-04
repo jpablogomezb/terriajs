@@ -46,43 +46,30 @@ const EmptyWorkbench: React.FC<EmptyWorkbenchProps> = (props) => {
   const { t } = useTranslation();
   return (
     <Text large textLight>
-      <Box column fullWidth justifySpaceBetween>
+      <Box centered column fullWidth justifySpaceBetween>
         <Box centered column>
           <ResponsiveSpacing />
-          <Text large color={props.theme.textLightDimmed}>
-            {t("emptyWorkbench.emptyArea")}
-          </Text>
+          <Text large color={props.theme.textLightDimmed}></Text>
           <ResponsiveSpacing />
         </Box>
         <BoxHelpfulHints column paddedRatio={3} overflowY="auto" scroll>
-          <Box left>
-            <Text extraLarge bold>
-              {t("emptyWorkbench.helpfulHints")}
-            </Text>
+          <Box centered>
+            <Text extraLarge bold></Text>
           </Box>
           <Spacing bottom={4} />
           <Box>
-            <HelpfulHintsIcon />
             <Spacing right={1} />
-            <Text medium light>
-              {t("emptyWorkbench.helpfulHintsOne")}
-            </Text>
+            <Text medium light></Text>
           </Box>
           <Spacing bottom={3} />
           <Box>
-            <HelpfulHintsIcon />
             <Spacing right={1} />
-            <Text medium light>
-              {t("emptyWorkbench.helpfulHintsTwo")}
-            </Text>
+            <Text medium light></Text>
           </Box>
           <Spacing bottom={3} />
           <Box>
-            <HelpfulHintsIcon />
             <Spacing right={1} />
-            <Text medium light>
-              {t("emptyWorkbench.helpfulHintsThree")}
-            </Text>
+            <Text medium light></Text>
           </Box>
           <ResponsiveSpacing />
         </BoxHelpfulHints>
@@ -117,18 +104,21 @@ const SidePanelButton = React.forwardRef<
 
 export const EXPLORE_MAP_DATA_NAME = "ExploreMapDataButton";
 export const SIDE_PANEL_UPLOAD_BUTTON_NAME = "SidePanelUploadButton";
+export const SIDE_PANEL_EBA_TOOL_NAME = "SidePanelEBAToolButton";
 
 interface SidePanelProps {
   viewState: ViewState;
   refForExploreMapData: React.Ref<HTMLButtonElement>;
   refForUploadData: React.Ref<HTMLButtonElement>;
+  refForEBAAnalysTool : React.Ref<HTMLButtonElement>;
   theme: DefaultTheme;
 }
 
 const SidePanel = observer<React.FC<SidePanelProps>>(
-  ({ viewState, theme, refForExploreMapData, refForUploadData }) => {
+  ({ viewState, theme, refForExploreMapData, refForEBAAnalysTool }) => {
     const terria = viewState.terria;
     const { t } = useTranslation();
+
     const onAddDataClicked: React.MouseEventHandler<HTMLButtonElement> = (
       e
     ) => {
@@ -143,6 +133,14 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       e.stopPropagation();
       viewState.setTopElement(ExplorerWindowElementName);
       viewState.openUserData();
+    };
+
+    const onAddEBAAnalysisToolClicked: React.MouseEventHandler<HTMLButtonElement> = (
+      e
+    ) => {
+      e.stopPropagation();
+      viewState.setTopElement(ExplorerWindowElementName);
+      viewState.openEBAAnalysisTool();
     };
 
     const addData = t("addData.addDataBtnText");
@@ -167,13 +165,14 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               onClick={onAddDataClicked}
               title={addData}
               btnText={addData}
-              styledWidth={"200px"}
+              styledWidth={"340px"}
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
-            <SidePanelButton
-              ref={refForUploadData}
-              onClick={onAddLocalDataClicked}
+            
+            {/* <SidePanelButton
+              ref={refForEBAAnalysTool}
+              onClick={onAddEBAAnalysisToolClicked}
               title={t("addData.load")}
               btnText={uploadText}
               styledWidth={"130px"}
@@ -183,6 +182,18 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
                 light
                 styledWidth={"20px"}
               />
+            </SidePanelButton> */}
+          </Box>
+          <Spacing bottom={2} />
+          <Box justifySpaceBetween>
+            <SidePanelButton
+              ref={refForEBAAnalysTool}
+              onClick={onAddEBAAnalysisToolClicked}
+              title="EBA Analysis Tool"
+              btnText="EBA Analysis Tool"
+              styledWidth={"340px"}
+            >
+              <StyledIcon glyph={Icon.GLYPHS.bulb} light styledWidth={"20px"} />
             </SidePanelButton>
           </Box>
           <Spacing bottom={1} />
@@ -208,14 +219,18 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
 // Used to create two refs for <SidePanel /> to consume, rather than
 // using the withTerriaRef() HOC twice, designed for a single ref
 const SidePanelWithRefs: React.FC<
-  Omit<SidePanelProps, "refForExploreMapData" | "refForUploadData">
+  Omit<SidePanelProps, "refForExploreMapData" | "refForUploadData"| "refForEBAAnalysTool">
 > = (props) => {
   const refForExploreMapData = useRefForTerria(
     EXPLORE_MAP_DATA_NAME,
     props.viewState
   );
   const refForUploadData = useRefForTerria(
-    SIDE_PANEL_UPLOAD_BUTTON_NAME,
+    SIDE_PANEL_UPLOAD_BUTTON_NAME, 
+    props.viewState
+  );
+  const refForEBAAnalysTool = useRefForTerria(
+    SIDE_PANEL_EBA_TOOL_NAME,
     props.viewState
   );
   return (
@@ -225,6 +240,7 @@ const SidePanelWithRefs: React.FC<
         refForExploreMapData as React.Ref<HTMLButtonElement>
       }
       refForUploadData={refForUploadData as React.Ref<HTMLButtonElement>}
+      refForEBAAnalysTool={refForEBAAnalysTool as React.Ref<HTMLButtonElement>}
     />
   );
 };

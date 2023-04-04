@@ -14,7 +14,7 @@ import ToolsPanel from "./Panels/ToolsPanel/ToolsPanel";
 import StoryButton from "./StoryButton/StoryButton";
 
 import Styles from "./menu-bar.scss";
-
+import AuthPanel from "./Panels/AuthPanel";
 const StyledMenuBar = styled.div`
   pointer-events: none;
   ${(p) =>
@@ -67,6 +67,12 @@ const MenuBar = observer((props) => {
       </section>
       <section className={classNames(Styles.flex)}>
         <ul className={classNames(Styles.menu)}>
+          <li className={Styles.menuItem}>
+            <AuthPanel terria={terria} />
+          </li>
+          <li className={Styles.menuItem}>
+            <AuthPanel terria={terria} />
+          </li>
           <li className={Styles.menuItem}>
             <SettingPanel terria={terria} viewState={viewState} />
           </li>

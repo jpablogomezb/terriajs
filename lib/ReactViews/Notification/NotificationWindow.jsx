@@ -88,7 +88,6 @@ const NotificationWindow = createReactClass({
             {window.location.host === "localhost:3001" &&
               title.toLowerCase().indexOf("error") >= 0 && (
                 <div>
-                  <img src="./build/TerriaJS/images/feature.gif" />
                 </div>
               )}
             <div className={Styles.body}>{message}</div>
