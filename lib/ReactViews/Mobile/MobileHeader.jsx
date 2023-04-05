@@ -15,7 +15,6 @@ import { withViewState } from "../StandardUserInterface/ViewStateContext";
 import Styles from "./mobile-header.scss";
 import MobileMenu from "./MobileMenu";
 import MobileModalWindow from "./MobileModalWindow";
-import AuthPanel from "../Map/Panels/AuthPanel";
 
 @observer
 class MobileHeader extends React.Component {
@@ -183,12 +182,6 @@ class MobileHeader extends React.Component {
                   background-color: ${(p) => p.theme.dark};
                 `}
               >
-                  <div>
-                    <AuthPanel
-                      terria={this.props.terria}
-                      className={Styles.btnLogin}
-                    ></AuthPanel>
-                  </div>
                 <button
                   type="button"
                   className={Styles.btnAdd}
