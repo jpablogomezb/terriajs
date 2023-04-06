@@ -10,9 +10,12 @@ import Styles from "./menu-button.scss";
  * @constructor
  */
 function MenuButtonLogin(props) {
-  const handleClick = () => {
+  const handleClick = (event) => {
     // Open the new window
-    window.open(props.href, "newWindow", "height=600,width=1050");
+    //window.location.href=props.href;
+
+    event.preventDefault();
+    window.location.href = props.href;
   };
 
   return (
