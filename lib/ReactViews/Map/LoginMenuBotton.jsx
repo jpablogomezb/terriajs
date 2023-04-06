@@ -11,9 +11,6 @@ import Styles from "./menu-button.scss";
  */
 function MenuButtonLogin(props) {
   const handleClick = (event) => {
-    // Open the new window
-    //window.location.href=props.href;
-
     event.preventDefault();
     window.location.href = props.href;
   };
