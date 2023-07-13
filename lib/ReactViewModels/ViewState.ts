@@ -4,7 +4,8 @@ import {
   IReactionDisposer,
   observable,
   reaction,
-  runInAction
+  runInAction,
+  makeObservable
 } from "mobx";
 import { Ref } from "react";
 import defined from "terriajs-cesium/Source/Core/defined";
@@ -245,6 +246,7 @@ export default class ViewState {
   @observable currentTourIndex: number = -1;
   @observable showCollapsedNavigation: boolean = false;
 
+  @computed
   get tourPointsWithValidRefs() {
     // should viewstate.ts reach into document? seems unavoidable if we want
     // this to be the true source of tourPoints.
@@ -252,6 +254,7 @@ export default class ViewState {
     // properly clean up your refs - so we'll leave that up to the UI to
     // provide valid refs
     return this.tourPoints
+      .slice()
       .sort((a, b) => {
         return a.priority - b.priority;
       })
@@ -371,6 +374,7 @@ export default class ViewState {
   private _disclaimerHandler: DisclaimerHandler;
 
   constructor(options: ViewStateOptions) {
+    makeObservable(this);
     const terria = options.terria;
     this.searchState = new SearchState({
       terria: terria,
