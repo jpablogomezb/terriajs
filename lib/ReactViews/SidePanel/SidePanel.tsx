@@ -140,8 +140,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       HTMLButtonElement
     > = (e) => {
       e.stopPropagation();
-      viewState.setTopElement(ExplorerWindowElementName);
-      viewState.openScenarioAnalysis();
+      window.location.href = "/scenarios/";
     };
 
     const addData = t("addData.addDataBtnText");
@@ -190,8 +189,8 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             <SidePanelButton
               ref={refForScenarioAnalysis}
               onClick={onAddScenarioAnalysisClicked}
-              title="Scenario Analysis"
-              btnText="Scenario Analysis"
+              title="Scenario Evaluation"
+              btnText="Scenario Evaluation"
               styledWidth={"340px"}
             >
               <StyledIcon glyph={Icon.GLYPHS.bulb} light styledWidth={"20px"} />
