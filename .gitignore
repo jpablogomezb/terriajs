@@ -20,3 +20,5 @@ dist
 
 # Catalog index generation files
 catalog-index*.json
+
+yarn-error.log
