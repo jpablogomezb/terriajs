@@ -245,7 +245,8 @@
     "browse": "Navegar...",
     "infoText": "<0> Arraste e solte um arquivo aqui para visualizá-lo localmente no mapa </0> <1> (ele não será salvo ou enviado para a internet) </1>",
     "back": "Voltar",
-    "note": "<0> Nota: </0> Os dados adicionados desta forma não são salvos ou tornados visíveis para outras pessoas."
+    "note": "<0> Nota: </0> Os dados adicionados desta forma não são salvos ou tornados visíveis para outras pessoas.",
+    "navScenarioValuation": "Explorar avaliação de cenário"
   },
   "languagePanel": {
     "changeLanguage": "Alterar Idioma"

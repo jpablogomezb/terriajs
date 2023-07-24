@@ -144,6 +144,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
     };
 
     const addData = t("addData.addDataBtnText");
+    const navScenarioValuation = t("addData.navScenarioValuation");
     const uploadText = t("models.catalog.upload");
     return (
       <Box column styledMinHeight={"0"} flex={1}>
@@ -189,8 +190,8 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             <SidePanelButton
               ref={refForScenarioAnalysis}
               onClick={onAddScenarioAnalysisClicked}
-              title="Scenario Evaluation"
-              btnText="Scenario Evaluation"
+              title={navScenarioValuation}
+              btnText={navScenarioValuation}
               styledWidth={"340px"}
             >
               <StyledIcon glyph={Icon.GLYPHS.bulb} light styledWidth={"20px"} />

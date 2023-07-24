@@ -260,7 +260,8 @@
     "localFile": "<0>Step 2:</0> Seleccionar archivo",
     "webTitle": "Añadir datos web",
     "dataCatalogue": "Catálogo de datos",
-    "localFileType": "<0>Step 1:</0> Seleccionar tipo de archivo"
+    "localFileType": "<0>Step 1:</0> Seleccionar tipo de archivo",
+    "navScenarioValuation": "Explorar la valoración de escenarios"
   },
   "satelliteGuidance": {
     "prevI": "No, gracias",
