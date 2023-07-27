@@ -140,7 +140,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       HTMLButtonElement
     > = (e) => {
       e.stopPropagation();
-      top.location.href = "/scenarios/";
+      window.location.href = "/scenarios/";
     };
 
     const addData = t("addData.addDataBtnText");
