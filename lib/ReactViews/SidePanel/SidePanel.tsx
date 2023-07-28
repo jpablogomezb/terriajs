@@ -140,7 +140,15 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       HTMLButtonElement
     > = (e) => {
       e.stopPropagation();
-      window.location.href = "/scenarios/";
+      if (
+        parent &&
+        parent.location &&
+        typeof parent.location.href === "string"
+      ) {
+        parent.location.href = "/scenarios/";
+      } else {
+        window.location.href = "/scenarios/";
+      }
     };
 
     const addData = t("addData.addDataBtnText");
