@@ -29,7 +29,7 @@ function MenuButtonLogin(props) {
 }
 
 MenuButtonLogin.defaultProps = {
-  url: "#"
+  url: "/login/"
 };
 
 MenuButtonLogin.propTypes = {
