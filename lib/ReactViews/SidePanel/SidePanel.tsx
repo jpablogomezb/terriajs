@@ -162,7 +162,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             background: ${theme.dark};
           `}
         >
-          <Spacing bottom={3} />
+          <Spacing bottom={4} />
           <SearchBoxAndResults
             viewState={viewState}
             terria={terria}
