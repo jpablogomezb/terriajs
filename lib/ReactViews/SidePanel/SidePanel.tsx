@@ -162,6 +162,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             background: ${theme.dark};
           `}
         >
+          <Spacing bottom={3} />
           <SearchBoxAndResults
             viewState={viewState}
             terria={terria}
@@ -205,7 +206,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
               <StyledIcon glyph={Icon.GLYPHS.bulb} light styledWidth={"20px"} />
             </SidePanelButton>
           </Box>
-          <Spacing bottom={1} />
+          <Spacing bottom={4} />
         </div>
         <Box
           styledMinHeight={"0"}

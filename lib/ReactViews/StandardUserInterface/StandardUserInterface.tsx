@@ -198,7 +198,7 @@ const StandardUserInterface: React.FC<StandardUserInterfaceProps> = observer(
                             animationDuration={250}
                             btnText={t("addData.btnHide")}
                           />
-                          <Branding version={props.version} />
+                          {/* <Branding version={props.version} /> */}
                           <SidePanel />
                         </SidePanelContainer>
                       </>
