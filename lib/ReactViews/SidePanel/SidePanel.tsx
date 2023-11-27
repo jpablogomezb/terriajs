@@ -11,14 +11,19 @@ import Text from "../../Styled/Text";
 import { ExplorerWindowElementName } from "../ExplorerWindow/ExplorerWindow";
 import { useRefForTerria } from "../Hooks/useRefForTerria";
 import SearchBoxAndResults from "../Search/SearchBoxAndResults";
-import { withViewState } from "../StandardUserInterface/ViewStateContext";
+import { withViewState } from "../Context";
 import Workbench from "../Workbench/Workbench";
+import { applyTranslationIfExists } from "../../Language/languageHelpers";
 
 const BoxHelpfulHints = styled(Box)``;
 
 const ResponsiveSpacing = styled(Box)`
   height: 110px;
+  height: 110px;
   // Hardcoded px value, TODO: make it not hardcoded
+  @media (max-height: 700px) {
+    height: 3vh;
+  }
   @media (max-height: 700px) {
     height: 3vh;
   }
@@ -110,15 +115,14 @@ interface SidePanelProps {
   viewState: ViewState;
   refForExploreMapData: React.Ref<HTMLButtonElement>;
   refForUploadData: React.Ref<HTMLButtonElement>;
-  refForEBAAnalysTool : React.Ref<HTMLButtonElement>;
+  refForEBAAnalysTool: React.Ref<HTMLButtonElement>;
   theme: DefaultTheme;
 }
 
 const SidePanel = observer<React.FC<SidePanelProps>>(
   ({ viewState, theme, refForExploreMapData, refForEBAAnalysTool }) => {
     const terria = viewState.terria;
-    const { t } = useTranslation();
-
+    const { t, i18n } = useTranslation();
     const onAddDataClicked: React.MouseEventHandler<HTMLButtonElement> = (
       e
     ) => {
@@ -135,9 +139,9 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
       viewState.openUserData();
     };
 
-    const onAddEBAAnalysisToolClicked: React.MouseEventHandler<HTMLButtonElement> = (
-      e
-    ) => {
+    const onAddEBAAnalysisToolClicked: React.MouseEventHandler<
+      HTMLButtonElement
+    > = (e) => {
       e.stopPropagation();
       viewState.setTopElement(ExplorerWindowElementName);
       viewState.openEBAAnalysisTool();
@@ -156,7 +160,10 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
           <SearchBoxAndResults
             viewState={viewState}
             terria={terria}
-            placeholder={t("search.placeholder")}
+            placeholder={applyTranslationIfExists(
+              terria.searchBarModel.placeholder,
+              i18n
+            )}
           />
           <Spacing bottom={2} />
           <Box justifySpaceBetween>
@@ -169,7 +176,7 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
             >
               <StyledIcon glyph={Icon.GLYPHS.add} light styledWidth={"20px"} />
             </SidePanelButton>
-            
+
             {/* <SidePanelButton
               ref={refForEBAAnalysTool}
               onClick={onAddEBAAnalysisToolClicked}
@@ -219,14 +226,17 @@ const SidePanel = observer<React.FC<SidePanelProps>>(
 // Used to create two refs for <SidePanel /> to consume, rather than
 // using the withTerriaRef() HOC twice, designed for a single ref
 const SidePanelWithRefs: React.FC<
-  Omit<SidePanelProps, "refForExploreMapData" | "refForUploadData"| "refForEBAAnalysTool">
+  Omit<
+    SidePanelProps,
+    "refForExploreMapData" | "refForUploadData" | "refForEBAAnalysTool"
+  >
 > = (props) => {
   const refForExploreMapData = useRefForTerria(
     EXPLORE_MAP_DATA_NAME,
     props.viewState
   );
   const refForUploadData = useRefForTerria(
-    SIDE_PANEL_UPLOAD_BUTTON_NAME, 
+    SIDE_PANEL_UPLOAD_BUTTON_NAME,
     props.viewState
   );
   const refForEBAAnalysTool = useRefForTerria(
