@@ -5,13 +5,14 @@ import PropTypes from "prop-types";
 import React from "react";
 import { withTranslation } from "react-i18next";
 import styled, { withTheme } from "styled-components";
+import { applyTranslationIfExists } from "../../Language/languageHelpers";
 import { removeMarker } from "../../Models/LocationMarkerUtils";
 import Box from "../../Styled/Box";
 import { RawButton } from "../../Styled/Button";
 import Icon, { StyledIcon } from "../../Styled/Icon";
 import SearchBox from "../Search/SearchBox";
 import Branding from "../SidePanel/Branding";
-import { withViewState } from "../StandardUserInterface/ViewStateContext";
+import { withViewState } from "../Context";
 import Styles from "./mobile-header.scss";
 import MobileMenu from "./MobileMenu";
 import MobileModalWindow from "./MobileModalWindow";
@@ -126,6 +127,38 @@ class MobileHeader extends React.Component {
     });
   }
 
+  renderSearch() {
+    const { t, viewState } = this.props;
+
+    const searchState = viewState.searchState;
+    <div className={Styles.formSearchData}>
+      {searchState.showMobileLocationSearch && (
+        <SearchBox
+          searchText={searchState.locationSearchText}
+          onSearchTextChanged={this.changeLocationSearchText.bind(this)}
+          onDoSearch={this.searchLocations.bind(this)}
+          placeholder={applyTranslationIfExists(
+            viewState.terria.searchBarModel.placeholder,
+            this.props.i18n
+          )}
+          alwaysShowClear={true}
+          onClear={this.closeLocationSearch.bind(this)}
+          autoFocus={true}
+        />
+      )}
+      {searchState.showMobileCatalogSearch && (
+        <SearchBox
+          searchText={searchState.catalogSearchText}
+          onSearchTextChanged={this.changeCatalogSearchText.bind(this)}
+          onDoSearch={this.searchCatalog.bind(this)}
+          placeholder={t("search.searchCatalogue")}
+          onClear={this.closeCatalogSearch.bind(this)}
+          autoFocus={true}
+        />
+      )}
+    </div>;
+  }
+
   render() {
     const searchState = this.props.viewState.searchState;
     const { t } = this.props;
@@ -143,13 +176,9 @@ class MobileHeader extends React.Component {
           paddedRatio={1}
           backgroundColor={this.props.theme.dark}
         >
-          <Choose>
-            <When
-              condition={
-                !searchState.showMobileLocationSearch &&
-                !searchState.showMobileCatalogSearch
-              }
-            >
+          {!searchState.showMobileLocationSearch &&
+          !searchState.showMobileCatalogSearch ? (
+            <>
               <Box
                 position="absolute"
                 css={`
@@ -182,6 +211,12 @@ class MobileHeader extends React.Component {
                   background-color: ${(p) => p.theme.dark};
                 `}
               >
+                <div>
+                  <AuthPanel
+                    terria={this.props.terria}
+                    className={Styles.btnLogin}
+                  ></AuthPanel>
+                </div>
                 <button
                   type="button"
                   className={Styles.btnAdd}
@@ -194,7 +229,7 @@ class MobileHeader extends React.Component {
                     styledHeight="20px"
                   />
                 </button>
-                <If condition={nowViewingLength > 0}>
+                {nowViewingLength > 0 && (
                   <button
                     type="button"
                     className={Styles.btnNowViewing}
@@ -209,7 +244,7 @@ class MobileHeader extends React.Component {
                       {nowViewingLength}
                     </span>
                   </button>
-                </If>
+                )}
                 <button
                   className={Styles.btnSearch}
                   type="button"
@@ -222,45 +257,15 @@ class MobileHeader extends React.Component {
                   />
                 </button>
               </div>
-            </When>
-            <Otherwise>
-              <div className={Styles.formSearchData}>
-                <Choose>
-                  <When condition={searchState.showMobileLocationSearch}>
-                    <SearchBox
-                      searchText={searchState.locationSearchText}
-                      onSearchTextChanged={this.changeLocationSearchText.bind(
-                        this
-                      )}
-                      onDoSearch={this.searchLocations.bind(this)}
-                      placeholder={t("search.placeholder")}
-                      alwaysShowClear={true}
-                      onClear={this.closeLocationSearch.bind(this)}
-                      autoFocus={true}
-                    />
-                  </When>
-                  <When condition={searchState.showMobileCatalogSearch}>
-                    <SearchBox
-                      searchText={searchState.catalogSearchText}
-                      onSearchTextChanged={this.changeCatalogSearchText.bind(
-                        this
-                      )}
-                      onDoSearch={this.searchCatalog.bind(this)}
-                      placeholder={t("search.searchCatalogue")}
-                      onClear={this.closeCatalogSearch.bind(this)}
-                      autoFocus={true}
-                    />
-                  </When>
-                </Choose>
-              </div>
-            </Otherwise>
-          </Choose>
+            </>
+          ) : (
+            this.renderSearch()
+          )}
         </Box>
         <MobileMenu
           menuItems={this.props.menuItems}
           menuLeftItems={this.props.menuLeftItems}
           viewState={this.props.viewState}
-          allBaseMaps={this.props.allBaseMaps}
           terria={this.props.viewState.terria}
           showFeedback={
             !!this.props.viewState.terria.configParameters.feedbackUrl
@@ -300,12 +305,12 @@ const HamburgerButton = styled(RawButton)`
 
 MobileHeader.propTypes = {
   viewState: PropTypes.object.isRequired,
-  allBaseMaps: PropTypes.array,
   version: PropTypes.string,
   menuLeftItems: PropTypes.array,
   menuItems: PropTypes.array,
   theme: PropTypes.object,
-  t: PropTypes.func.isRequired
+  t: PropTypes.func.isRequired,
+  i18n: PropTypes.object
 };
 
 export default withTranslation()(withTheme(withViewState(MobileHeader)));

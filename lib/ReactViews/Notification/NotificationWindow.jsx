@@ -86,18 +86,15 @@ const NotificationWindow = createReactClass({
           <div className={Styles.inner} style={divStyle}>
             <h3 className="title">{title}</h3>
             {window.location.host === "localhost:3001" &&
-              title.toLowerCase().indexOf("error") >= 0 && (
-                <div>
-                </div>
-              )}
+              title.toLowerCase().indexOf("error") >= 0 && <div></div>}
             <div className={Styles.body}>{message}</div>
           </div>
           <div className={Styles.footer}>
-            <If condition={denyText}>
+            {denyText && (
               <button type="button" className={Styles.btn} onClick={this.deny}>
                 {denyText}
               </button>
-            </If>
+            )}
             <button type="button" className={Styles.btn} onClick={this.confirm}>
               {confirmText}
             </button>
