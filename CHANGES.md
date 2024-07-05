@@ -1,8 +1,124 @@
 # Change Log
 
-#### next release (8.3.10)
+#### next release (8.7.6)
 
+- Set default value for date and datetime WPS fields only when the field is marked as required.
 - [The next improvement]
+
+#### 8.7.5 - 2024-06-26
+
+- TSify some `js` and `jsx` files and provide `.d.ts` ambient type files for a few others. This is so that running `tsc` on an external project that imports Terria code will typecheck successfully.
+- Upgraded a bunch of d3 dependencies for fixing security errors.
+- Show rectangle selector for WPS bounding box parameter
+- Fix `store` and `status` values send in WPS Execute request.
+- Add docs for `modelDimensions`
+- [The next improvement]
+
+#### 8.7.4 - 2024-06-07
+
+- Fix position of draggable point after moving.
+- Fix `getFeatureProperties` (in `FeatureInfoSection`) failing due to bad JSON parsing of nested strings.
+- The `TableFeatureInfoStratum` default `featureInfoTemplate` will now not show `_id_` (internal Terria feature ID) in feature info
+- Fix bug in FilterSection
+
+#### 8.7.3 - 2024-05-28
+
+- Fix broken chart selector
+- Feature info template `<chart>` definition now accepts a `y-column` attribute to set the y-column that should be rendered in the feature info panel chart.
+- Upgrade `thredds-catalog-crawler` to `v0.0.7` which makes a few security upgrades.
+- Fix bug with broken datetime after that Timeline has been closed once.
+- Fix WPS date time widget reset bug
+- Set default date for WPS date time widget on load
+- Add NumberParameterEditor to enable WPS AllowedValues Ranges to be set and use DefaultValue
+
+#### 8.7.2 - 2024-05-14
+
+- Add NumberParameterEditor to enable WPS AllowedValues Ranges to be set and use DefaultValue
+- Feature info template has access to activeStyle of item having TableTraits.
+- Updated a few dependencies to fix security warnings: `underscore`, `visx`, `shpjs`, `resolve-uri-loader`, `svg-sprite-loader`
+- Allow related maps UI strings to be translated. Translation support for related maps content is not included.
+
+#### 8.7.1 - 2024-04-16
+
+- Upgraded to TerriajS Cesium 1.115.0
+- Fix `PointStyleTraits.marker` bug where URLs were not being used.
+- Fixed a bug with passing a relative baseUrl to Cesium >= 1.113.0 when `document.baseURI` is different to its `location`.
+- Fix node v18 compatibility by forcing `webpack-terser-plugin` version resolution and fixing new type errors
+- Reduce log noise in `MagdaReference`.
+
+#### 8.7.0 - 2024-03-22
+
+- **Breaking changes:**
+  - `generateCatalogIndex` now uses `commander` to parse arguments. Run `node ./build/generateCatalogIndex.js --help` for more information.
+- Fixed exception thrown from `objectArrayTrait` when a model has 0 strata and a `MergeStrategy` of `topStratum`.
+- Fix `generateCatalogIndex` after `searchProvider` changes
+- Fix bug with relative URLs being ignored in `generateCatalogIndex`
+- Fix bug with ArcGisMapServerImageryProvider not correctly identifying if the `tile` endpoint can be used
+
+#### 8.6.1 - 2024-03-14
+
+- Fix SDMX `featureInfoTemplate` `<chart>` bug not showing correct `yColumn`
+
+#### 8.6.0 - 2024-03-12
+
+- **Breaking changes:**
+  - Add `MergeStrategy` to `objectArrayTrait` - this includes a new `topStratum` strategy - similar to `Merge.All` (the default behaviour), but only elements that exist in the top-most strata will be merged with lower strata. Elements that only exist in lower strata will be removed.
+  - **Note** the only trait with `MergeStrategy` set to `topStratum` is `lines` in `TableChartStyleTraits`.
+- Fix `y-column` in `FeatureInfoPanelChart` (`<chart>`)
+
+#### 8.5.2 - 2024-03-07
+
+- Add `usePreCachedTilesIfAvailable` to `ArcGisMapServerCatalogItemTraits`.
+- Improved `ChartableMixin.isMixedInto` to ensure there are no false positive matches when testing References.
+- Fixed a bug in `MagdaReference` where members of a group would not be updated/created correctly when a group is reloaded.
+
+#### 8.5.1 - 2024-02-23
+
+- Added highly experimental CatalogProvider, intended to encapsulate functionality related to the entire catalog, or large subtrees of it, that doesn't fit into individual catalog member models.
+- `BingMapsCatalogItem` now supports Bing's `culture` parameter.
+- Update a prompt text in DataPreview.
+
+#### 8.5.0 - 2024-02-07
+
+- **Breaking changes:**
+  - Upgrade TypeScript to 5.2
+  - Switch Babel configuration to new JSX transform
+- Improve tsconfig files
+- Remove deprecated default `relatedMaps`
+- Update `thredds-catalog-crawler` to `0.0.6`
+- `WebMapServiceCatalogItem` will drop problematic query parameters from `url` when calling `GetCapabilities` (eg `"styles","srs","crs","format"`)
+- Fixed regression causing explorer window not to display instructions when first opened.
+- Enable eslint for typescript: plugin:@typescript-eslint/eslint-recommended
+- Fixed a bug where the search box was missing for small screen devices.
+- Prevent user adding empty web url
+- Fix bug where search results shown in `My Data` tab
+- Fix bug in function createDiscreteTimesFromIsoSegments where it might create duplicate timestamps.
+- Add option to enable/disable shortening share URLs via InitSourceData.
+- Fix bug in ArcGisMapServerCatalogItem.
+- Add examples.
+- Upgraded Cesium to 1.113.0 (i.e. `terriajs-cesium@6.2.0` & `terriajs-cesium-widgets@4.4.0`).
+
+#### 8.4.1 - 2023-12-08
+
+- Temporary UX fixes for clipping box:
+  - An option to zoom to clipping box
+  - An option to re-position the clipping box
+  - Trigger repositioning of clipping box when the user enables clipping box for the first time
+  - Cursor and scale point handle changes (makes it much easier to grasp)
+  - More robust interaction with the box
+- Fix a bug where `DragPoints` was interfering with pedstrian mode mouse movements.
+- Update `webpack` to `4.47.0` to support Node >= 18 without extra command line parameters.
+- Add support for multiple `urls` for `GeoJsonCatalogItem`.
+- Automatically explode GeoJSON `MultiPoint` features to `Point` features.
+- Add new table styling traits - `scaleByDistance` and `disableDepthTestDistance`.
+- Add support for `LineString` and `MultiLineString` when using `GeoJsonCatalogItem` in `CZML` mode.
+
+#### 8.4.0 - 2023-12-01
+
+- **Breaking change:** Replaced `node-sass` with (dart) `sass`
+  - You will need to update your `TerriaMap` to use `sass` instead of `node-sass`.
+- Added `apiColumns` to `ApiTableCatalogItem` - this can now be used to specify `responseDataPath` per table column.
+- `ArcGisMapServerCatalogItem` will now use "pre-cached tiles" if available if no (or all) `layers` are specified.
 
 #### 8.3.9 - 2023-11-24
 

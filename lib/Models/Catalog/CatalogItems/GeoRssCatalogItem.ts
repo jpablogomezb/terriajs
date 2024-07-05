@@ -12,9 +12,7 @@ import {
   geoRss2ToGeoJson,
   geoRssAtomToGeoJson
 } from "../../../Map/Vector/geoRssConvertor";
-import CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
 import GeoJsonMixin from "../../../ModelMixins/GeojsonMixin";
-import UrlMixin from "../../../ModelMixins/UrlMixin";
 import { InfoSectionTraits } from "../../../Traits/TraitsClasses/CatalogMemberTraits";
 import GeoRssCatalogItemTraits from "../../../Traits/TraitsClasses/GeoRssCatalogItemTraits";
 import CreateModel from "../../Definition/CreateModel";
@@ -161,11 +159,11 @@ export default class GeoRssCatalogItem
     let metadata: Feed;
     if (documentElement.localName.includes(GeoRssFormat.ATOM)) {
       metadata = parseMetadata(documentElement.childNodes, this);
-      json = <any>geoRssAtomToGeoJson(xmlData);
+      json = geoRssAtomToGeoJson(xmlData) as any;
     } else if (documentElement.localName === GeoRssFormat.RSS) {
       const element = documentElement.getElementsByTagName("channel")[0];
       metadata = parseMetadata(element.childNodes, this);
-      json = <any>geoRss2ToGeoJson(xmlData);
+      json = geoRss2ToGeoJson(xmlData) as any;
     } else {
       throw new RuntimeError("document is not valid");
     }
@@ -215,7 +213,7 @@ function parseMetadata(
   result.link = [];
   result.category = [];
   for (let i = 0; i < xmlElements.length; ++i) {
-    const child = <Element>xmlElements[i];
+    const child = xmlElements[i] as Element;
     if (
       child.nodeType !== 1 ||
       child.localName === "item" ||
@@ -264,7 +262,7 @@ function parseMetadata(
           authorIndex < authorNode.length;
           ++authorIndex
         ) {
-          const authorChild = <Element>authorNode[authorIndex];
+          const authorChild = authorNode[authorIndex] as Element;
           if (authorChild.nodeType === 1) {
             if (authorChild.localName === "name") {
               name = authorChild.textContent || undefined;

@@ -30,12 +30,12 @@ import SharePanel from "../Map/Panels/SharePanel/SharePanel";
 import { WithViewState, withViewState } from "../Context";
 import Story from "./Story";
 import Styles from "./story-builder.scss";
-import StoryEditor from "./StoryEditor.jsx";
+import StoryEditor from "./StoryEditor";
 const dataStoriesImg = require("../../../wwwroot/images/data-stories-getting-started.jpg");
 
 const STORY_VIDEO = "storyVideo";
 
-type StoryData = ViewState["terria"]["stories"][number];
+export type StoryData = ViewState["terria"]["stories"][number];
 
 interface IProps {
   isVisible?: boolean;
@@ -85,7 +85,7 @@ class StoryBuilder extends React.Component<
       storyWithOpenMenuId: undefined
     };
   }
-  removeStory = (index: number, story: StoryData) => {
+  removeStory = (index: number, story?: StoryData) => {
     this.setState({
       isSharing: false,
       isRemoving: true,
@@ -260,8 +260,6 @@ class StoryBuilder extends React.Component<
     return (
       <Box column>
         <VideoGuide
-          /*
-          // @ts-ignore */
           viewState={this.props.viewState}
           videoLink={
             this.props.viewState.terria.configParameters.storyVideo?.videoUrl ||
@@ -283,7 +281,7 @@ class StoryBuilder extends React.Component<
         <CaptureScene
           disabled={this.state.isRemoving}
           onClickCapture={this.onClickCapture}
-        ></CaptureScene>
+        />
       </Box>
     );
   }
@@ -404,7 +402,7 @@ class StoryBuilder extends React.Component<
               <Sortable
                 onSort={this.onSort}
                 direction="vertical"
-                dynamic={true}
+                dynamic
                 css={`
                   position: static;
                   margin-right: 10px;
@@ -434,7 +432,7 @@ class StoryBuilder extends React.Component<
             <CaptureScene
               disabled={this.state.isRemoving}
               onClickCapture={this.onClickCapture}
-            ></CaptureScene>
+            />
           </Box>
           <Spacing bottom={2} />
         </Box>
@@ -487,7 +485,7 @@ class StoryBuilder extends React.Component<
             />
           </RawButton>
         </Box>
-        <Box centered={true} paddedHorizontally={2} displayInlineBlock>
+        <Box centered paddedHorizontally={2} displayInlineBlock>
           <Text bold extraExtraLarge textLight>
             {t("story.panelTitle")}
           </Text>

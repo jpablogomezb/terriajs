@@ -95,6 +95,7 @@ export default class TimelineStack {
     }
     if (this._disposeTickSubscription) {
       this._disposeTickSubscription();
+      this._disposeTickSubscription = undefined;
     }
   }
 
@@ -142,7 +143,7 @@ export default class TimelineStack {
    */
   @action
   addToTop(item: TimeVarying) {
-    var currentIndex = this.items.indexOf(item);
+    const currentIndex = this.items.indexOf(item);
     this.items.unshift(item);
     if (currentIndex > -1) {
       this.items.splice(currentIndex, 1);
@@ -157,7 +158,7 @@ export default class TimelineStack {
    */
   @action
   remove(item: TimeVarying) {
-    var index = this.items.indexOf(item);
+    const index = this.items.indexOf(item);
     this.items.splice(index, 1);
   }
 
@@ -177,7 +178,7 @@ export default class TimelineStack {
    */
   @action
   promoteToTop(item: TimeVarying) {
-    var currentIndex = this.items.indexOf(item);
+    const currentIndex = this.items.indexOf(item);
     if (currentIndex > -1) {
       this.addToTop(item);
     }

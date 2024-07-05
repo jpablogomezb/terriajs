@@ -1,22 +1,19 @@
-"use strict";
-
+import DOMPurify from "dompurify";
 import React, {
   AnchorHTMLAttributes,
   createElement,
   DetailedReactHTMLElement,
   ReactElement
 } from "react";
-import styled from "styled-components";
+import combine from "terriajs-cesium/Source/Core/combine";
+import defined from "terriajs-cesium/Source/Core/defined";
 import CustomComponent, {
   DomElement,
   ProcessNodeContext
 } from "./CustomComponent";
-import { ExternalLinkWithWarning, ExternalLinkIcon } from "./ExternalLink";
+import { ExternalLinkIcon, ExternalLinkWithWarning } from "./ExternalLink";
 
-const DOMPurify = require("dompurify/dist/purify");
 const HtmlToReact = require("html-to-react");
-const combine = require("terriajs-cesium/Source/Core/combine").default;
-const defined = require("terriajs-cesium/Source/Core/defined").default;
 const utils = require("html-to-react/lib/utils");
 
 const htmlToReactParser = new HtmlToReact.Parser({
@@ -113,6 +110,8 @@ function getProcessingInstructions(context: ParseCustomHtmlToReactContext) {
 
       // If external link and showExternalLinkWarning is true - replace with ExternalLinkWithWarning
       if (appendExternalLink && context.showExternalLinkWarning) {
+        /* TODO: Fix types */
+        /* eslint-disable-next-line react/no-children-prop */
         return createElement(ExternalLinkWithWarning, {
           attributes: aElement.props,
           children: aElement.props.children
@@ -147,7 +146,7 @@ function parseCustomHtmlToReact(
   html: string,
   context?: ParseCustomHtmlToReactContext,
   allowUnsafeHtml: boolean = false,
-  domPurifyOptions: Object = {}
+  domPurifyOptions: object = {}
 ) {
   if (!defined(html) || html.length === 0) {
     return html;

@@ -1,17 +1,15 @@
-"use strict";
-
-var defined = require("terriajs-cesium/Source/Core/defined").default;
-var MarkdownIt = require("markdown-it");
-var DOMPurify = require("dompurify/dist/purify");
-import injectTerms from "./injectTerms";
+import DOMPurify from "dompurify";
+import MarkdownIt from "markdown-it";
+import defined from "terriajs-cesium/Source/Core/defined";
 import { Term } from "../ReactViewModels/defaultTerms";
+import injectTerms from "./injectTerms";
 
-var md = new MarkdownIt({
+const md = new MarkdownIt({
   html: true,
   linkify: true
 });
 
-var htmlRegex = /^\s*<[^>]+>/;
+const htmlRegex = /^\s*<[^>]+>/;
 
 export interface MarkdownOptions {
   // requires tooltipTerms as well
@@ -35,7 +33,7 @@ export interface MarkdownOptions {
 function markdownToHtml(
   markdownString: string,
   allowUnsafeHtml: boolean = false,
-  domPurifyOptions: Object = {},
+  domPurifyOptions: object = {},
   markdownOptions: MarkdownOptions = {}
 ) {
   if (!defined(markdownString) || markdownString.length === 0) {
@@ -44,7 +42,7 @@ function markdownToHtml(
   // If the text looks like html, don't try to interpret it as Markdown because
   // we'll probably break it in the process.
   // It would wrap non-standard tags such as <collapsible>hi</collapsible> in a <p></p>, which is bad.
-  var unsafeHtml: string;
+  let unsafeHtml: string;
   if (htmlRegex.test(markdownString)) {
     unsafeHtml = markdownString;
   } else {
@@ -54,7 +52,7 @@ function markdownToHtml(
     // (typeof string === 'string').  So if this isn't a string primitive, call toString
     // on it in order to make it one.
     if (markdownString && typeof markdownString !== "string") {
-      stringToParse = (<any>markdownString).toString();
+      stringToParse = (markdownString as any).toString();
     }
     if (markdownOptions.injectTermsAsTooltips && markdownOptions.tooltipTerms) {
       stringToParse = injectTerms(stringToParse, markdownOptions.tooltipTerms);

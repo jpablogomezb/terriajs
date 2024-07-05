@@ -34,6 +34,7 @@ import TableTrailStyleTraits, {
 
 import HorizontalOrigin from "terriajs-cesium/Source/Scene/HorizontalOrigin";
 import VerticalOrigin from "terriajs-cesium/Source/Scene/VerticalOrigin";
+import ScaleByDistanceTraits from "../../lib/Traits/TraitsClasses/ScaleByDistanceTraits";
 
 const LatLonValCsv = require("raw-loader!../../wwwroot/test/csv/lat_lon_val.csv");
 const LatLonEnumCsv = require("raw-loader!../../wwwroot/test/csv/lat_lon_enum.csv");
@@ -108,7 +109,7 @@ describe("TableMixin", function () {
     beforeEach(async function () {
       item.setTrait(CommonStrata.user, "csvString", LatLonEnumDateIdCsv);
       (await item.loadMapItems()).throwIfError();
-      dataSource = <CustomDataSource>item.mapItems[0];
+      dataSource = item.mapItems[0] as CustomDataSource;
       expect(dataSource instanceof CustomDataSource).toBe(true);
     });
 
@@ -196,7 +197,7 @@ describe("TableMixin", function () {
         LatLonEnumDateIdWithRegionCsv
       );
       (await item.loadMapItems()).throwIfError();
-      dataSource = <CustomDataSource>item.mapItems[0];
+      dataSource = item.mapItems[0] as CustomDataSource;
       expect(dataSource instanceof CustomDataSource).toBe(true);
     });
 
@@ -307,7 +308,7 @@ describe("TableMixin", function () {
 
         const duplicateValue = 7;
         let occurrences = 0;
-        for (let entity of mapItem.entities.values) {
+        for (const entity of mapItem.entities.values) {
           const val = entity.properties?.value.getValue();
           if (val === duplicateValue) {
             occurrences++;
@@ -349,7 +350,7 @@ describe("TableMixin", function () {
     beforeEach(async function () {
       item.setTrait(CommonStrata.user, "csvString", ParkingSensorDataCsv);
       (await item.loadMapItems()).throwIfError();
-      dataSource = <CustomDataSource>item.mapItems[0];
+      dataSource = item.mapItems[0] as CustomDataSource;
       expect(dataSource instanceof CustomDataSource).toBe(true);
     });
 
@@ -875,11 +876,48 @@ describe("TableMixin", function () {
   });
 
   describe("applies TableStyles to lat/lon features", function () {
-    it("supports image marker style", async function () {
+    it("supports image marker style - data URI", async function () {
       item.setTrait(CommonStrata.user, "csvString", LatLonValCsv);
 
       const image =
         "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IB2cksfwAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAZNJREFUWIXtlrFLQlEUxr/QPGYhTbYEhhgWErjU0twQ9AdEGNnU0CiBL60pMBqC2gSHhgoamhoFt8ZaIugtQhFFY1Hmp0EN+ehZDd3e84ngB493733vnPPjXj7OdaPFcncA2h3AIyLrJBMiskcy01QAEdkgmTavkTTeaQDpbyFdtgKQXFH5/y9SPQKPefII7PuB2Xqe0xGRgE4ONxOgQX4gbppOHpGlmGIOW10wCoRUY2wFKP0jxhJAHMAqgCCAawBRpwEO6o8VWQKYjqK8lYAEA3Bd3UGf0BBxFOBYg6+n+3M8HkJkaQqVXAFexwCM4oZ2F+HNFdRytHczeq017sJyHi8Aeh0DmMniaSeB96EBeC5ucJ4vYlI1hyWA4iX8Y1/tSbm4ZQCJohxegHgDcD3fQtczDtswtgafMe4PIxLZRElPqfUDW13QN9jiZlR5UI+xBPBWA9wmG96fNN+GVZhuRWfzP74rFVcGEJFtkinVIrYBkNQAaKYlj4hkSc6JyCHJZFMBflG1XjRpXM+dBrCsDsAHoPtrwlSQt8wAAAAASUVORK5CYII=";
+
+      item.setTrait(CommonStrata.user, "styles", [
+        createStratumInstance(TableStyleTraits, {
+          id: "test-style",
+          point: createStratumInstance(TablePointStyleTraits, {
+            null: createStratumInstance(PointSymbolTraits, {
+              marker: image,
+              height: 20
+            })
+          })
+        })
+      ]);
+      item.setTrait(CommonStrata.user, "activeStyle", "test-style");
+
+      (await item.loadMapItems()).throwIfError();
+
+      const mapItem = item.mapItems[0] as CustomDataSource;
+
+      mapItem.entities.values.forEach((feature) => {
+        expect(
+          feature.billboard?.image?.getValue(
+            item.terria.timelineClock.currentTime
+          )
+        ).toBe(image);
+
+        expect(
+          feature.billboard?.height?.getValue(
+            item.terria.timelineClock.currentTime
+          )
+        ).toBe(20);
+      });
+    });
+
+    it("supports image marker style - URL", async function () {
+      item.setTrait(CommonStrata.user, "csvString", LatLonValCsv);
+
+      const image = "http://localhost:3001/build/TerriaJS/images/map-pin.svg";
 
       item.setTrait(CommonStrata.user, "styles", [
         createStratumInstance(TableStyleTraits, {
@@ -2024,6 +2062,64 @@ describe("TableMixin", function () {
       });
     });
 
+    it("correctly applies disableDepthTestDistance trait", async function () {
+      item.setTrait(CommonStrata.user, "csvString", LatLonValCsv);
+      item.setTrait(CommonStrata.user, "styles", [
+        createStratumInstance(TableStyleTraits, {
+          id: "test-style",
+          point: createStratumInstance(TablePointStyleTraits, {
+            null: createStratumInstance(PointSymbolTraits, {
+              disableDepthTestDistance: 42
+            })
+          })
+        })
+      ]);
+      item.setTrait(CommonStrata.user, "activeStyle", "test-style");
+      await item.loadMapItems();
+
+      const mapItem = item.mapItems[0] as CustomDataSource;
+      mapItem.entities.values.forEach((entity) =>
+        expect(
+          entity.point?.disableDepthTestDistance?.getValue(JulianDate.now())
+        ).toBe(42)
+      );
+    });
+
+    it("correctly applies scaleByDistance traits", async function () {
+      item.setTrait(CommonStrata.user, "csvString", LatLonValCsv);
+      item.setTrait(CommonStrata.user, "styles", [
+        createStratumInstance(TableStyleTraits, {
+          id: "test-style",
+          point: createStratumInstance(TablePointStyleTraits, {
+            null: createStratumInstance(PointSymbolTraits, {
+              scaleByDistance: createStratumInstance(ScaleByDistanceTraits, {
+                near: 0,
+                nearValue: 4,
+                far: 50000,
+                farValue: 10
+              })
+            })
+          })
+        })
+      ]);
+      item.setTrait(CommonStrata.user, "activeStyle", "test-style");
+      await item.loadMapItems();
+
+      const mapItem = item.mapItems[0] as CustomDataSource;
+      mapItem.entities.values.forEach((entity) =>
+        expect(
+          entity.point?.scaleByDistance?.getValue(JulianDate.now())
+        ).toEqual(
+          jasmine.objectContaining({
+            near: 0,
+            nearValue: 4,
+            far: 50000,
+            farValue: 10
+          })
+        )
+      );
+    });
+
     it("doesn't pick hidden style as default activeStyle", async function () {
       item.setTrait(CommonStrata.user, "csvString", ParkingSensorDataCsv);
 
@@ -2041,6 +2137,16 @@ describe("TableMixin", function () {
       (await item.loadMapItems()).throwIfError();
 
       expect(item.activeStyle).toBe("parkflag");
+    });
+  });
+
+  describe("applies default featureInfoTemplate", function () {
+    it("removes _id_ from template", async function () {
+      item.setTrait(CommonStrata.user, "csvString", LatLonValCsv);
+
+      (await item.loadMapItems()).throwIfError();
+
+      expect(item.featureInfoTemplate.template?.indexOf("_id_")).toBe(-1);
     });
   });
 });
