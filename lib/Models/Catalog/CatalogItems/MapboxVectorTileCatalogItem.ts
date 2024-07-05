@@ -1,12 +1,6 @@
 import bbox from "@turf/bbox";
 import i18next from "i18next";
-import {
-  computed,
-  observable,
-  runInAction,
-  makeObservable,
-  override
-} from "mobx";
+import { computed, runInAction, makeObservable, override } from "mobx";
 import {
   GeomType,
   json_style,
@@ -158,7 +152,7 @@ class MapboxVectorTileCatalogItem extends MappableMixin(
    * - `parsedJsonStyle`
    */
   get paintRules(): PaintRule[] {
-    let rules: PaintRule[] = [];
+    const rules: PaintRule[] = [];
 
     if (this.layer) {
       if (this.fillColor) {
@@ -183,7 +177,7 @@ class MapboxVectorTileCatalogItem extends MappableMixin(
 
     if (this.parsedJsonStyle) {
       rules.push(
-        ...((<unknown>this.parsedJsonStyle.paint_rules) as PaintRule[])
+        ...(this.parsedJsonStyle.paint_rules as unknown as PaintRule[])
       );
     }
 
@@ -193,7 +187,7 @@ class MapboxVectorTileCatalogItem extends MappableMixin(
   @computed
   get labelRules(): LabelRule[] {
     if (this.parsedJsonStyle) {
-      return (<unknown>this.parsedJsonStyle.label_rules) as LabelRule[];
+      return this.parsedJsonStyle.label_rules as unknown as LabelRule[];
     }
     return [];
   }

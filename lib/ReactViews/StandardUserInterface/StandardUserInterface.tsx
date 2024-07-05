@@ -2,11 +2,10 @@ import classNames from "classnames";
 import "inobounce";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import React, { useEffect, ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { DefaultTheme } from "styled-components";
 import combine from "terriajs-cesium/Source/Core/combine";
-import arrayContains from "../../Core/arrayContains";
 import ViewState from "../../ReactViewModels/ViewState";
 import Disclaimer from "../Disclaimer";
 import DragDropFile from "../DragDropFile";
@@ -30,10 +29,12 @@ import FullScreenButton from "../SidePanel/FullScreenButton";
 import SidePanel from "../SidePanel/SidePanel";
 import StoryBuilder from "../Story/StoryBuilder";
 import StoryPanel from "../Story/StoryPanel/StoryPanel";
+import ClippingBoxToolLauncher from "../Tools/ClippingBox/ClippingBoxToolLauncher";
 import Tool from "../Tools/Tool";
 import TourPortal from "../Tour/TourPortal";
 import WelcomeMessage from "../WelcomeMessage/WelcomeMessage";
 import SelectableDimensionWorkflow from "../Workflow/SelectableDimensionWorkflow";
+import WorkflowPanelPortal from "../Workflow/WorkflowPanelPortal";
 import { ContextProviders } from "../Context";
 import { GlobalTerriaStyles } from "./GlobalTerriaStyles";
 import MapColumn from "../Map/MapColumn";
@@ -41,7 +42,6 @@ import processCustomElements from "./processCustomElements";
 import SidePanelContainer from "./SidePanelContainer";
 import Styles from "./standard-user-interface.scss";
 import { terriaTheme } from "./StandardTheme";
-import WorkflowPanelPortal from "../Workflow/WorkflowPanelPortal";
 
 export const animationDuration = 250;
 
@@ -67,10 +67,7 @@ const StandardUserInterfaceBase: React.FC<StandardUserInterfaceProps> =
     });
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-      if (
-        !e.dataTransfer.types ||
-        !arrayContains(e.dataTransfer.types, "Files")
-      ) {
+      if (!e.dataTransfer.types || !e.dataTransfer.types.includes("Files")) {
         return;
       }
       e.preventDefault();
@@ -132,8 +129,6 @@ const StandardUserInterfaceBase: React.FC<StandardUserInterfaceProps> =
       props.children
     );
 
-    const terria = props.terria;
-
     const showStoryBuilder =
       props.viewState.storyBuilderShown &&
       !props.viewState.useSmallScreenInterface;
@@ -190,7 +185,7 @@ const StandardUserInterfaceBase: React.FC<StandardUserInterfaceProps> =
                           }
                         >
                           <FullScreenButton
-                            minified={true}
+                            minified
                             animationDuration={250}
                             btnText={t("addData.btnHide")}
                           />
@@ -229,7 +224,7 @@ const StandardUserInterfaceBase: React.FC<StandardUserInterfaceProps> =
                     customElements={customElements}
                     animationDuration={animationDuration}
                   />
-                  <div id="map-data-attribution"></div>
+                  <div id="map-data-attribution" />
                   <main>
                     <ExplorerWindow />
                     {props.terria.configParameters.experimentalFeatures &&
@@ -300,6 +295,7 @@ const StandardUserInterfaceBase: React.FC<StandardUserInterfaceProps> =
             closeCallback={() => props.viewState.setPrintWindow(null)}
           />
         )}
+        <ClippingBoxToolLauncher viewState={props.viewState} />
       </ContextProviders>
     );
   });

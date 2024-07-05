@@ -28,6 +28,7 @@ class RelatedMaps extends React.Component<PropTypes> {
   }
 
   render() {
+    const t = this.props.t;
     const dropdownTheme = {
       inner: Styles.dropdownInner,
       icon: "gallery"
@@ -38,20 +39,20 @@ class RelatedMaps extends React.Component<PropTypes> {
     return (
       <MenuPanel
         theme={dropdownTheme}
-        btnText="Related Maps"
+        btnText={t("relatedMaps.buttonText")}
         smallScreen={smallScreen}
         viewState={this.props.viewState}
-        btnTitle="See related maps"
+        btnTitle={t("relatedMaps.buttonTitle")}
         showDropdownInCenter
       >
-        <h2>Related Maps</h2>
+        <h2>{t("relatedMaps.panelHeading")}</h2>
 
-        <p>Clicking on a map below will open it in a separate window or tab.</p>
+        <p>{t("relatedMaps.panelText")}</p>
 
         {this.props.relatedMaps.map((map, i) => (
           <Box flex key={i}>
             <Box>
-              <a target="_blank" href={map.url}>
+              <a target="_blank" href={map.url} rel="noreferrer">
                 <img
                   style={{
                     marginRight: "10px",
@@ -70,6 +71,7 @@ class RelatedMaps extends React.Component<PropTypes> {
                 target="_blank"
                 style={{ color: this.props.theme.colorPrimary }}
                 href={map.url}
+                rel="noreferrer"
               >
                 {map.title}
                 <ExternalLinkIcon />

@@ -115,7 +115,9 @@ function DiscretelyTimeVaryingMixin<
               tag: dt.tag !== undefined ? dt.tag : dt.time
             });
           }
-        } catch {}
+        } catch {
+          /* eslint-disable-line no-empty */
+        }
       }
       asJulian.sort((a, b) => JulianDate.compare(a.time, b.time));
       return asJulian;
@@ -350,12 +352,13 @@ function DiscretelyTimeVaryingMixin<
       const colorId = `color-${this.name}`;
       return {
         item: this,
+        id: this.name || "",
         name: this.name || "",
         categoryName: this.name,
         key: `key${this.uniqueId}-${this.name}`,
         type: this.chartType || "momentLines",
         glyphStyle: this.chartGlyphStyle,
-        xAxis: { scale: "time" },
+        xAxis: { name: "Time", scale: "time" },
         points,
         domain: { ...calculateDomain(points), y: [0, 1] },
         showInChartPanel: this.show && this.showInChartPanel,
@@ -436,15 +439,15 @@ export type ObjectifiedHours = DatesObject<Date[]>;
  *   whose values are objects whose keys are days, whose values are arrays of all the datetimes on that day.
  */
 function objectifyDates(dates: Date[]): ObjectifiedDates {
-  let result: ObjectifiedDates = { index: [], dates };
+  const result: ObjectifiedDates = { index: [], dates };
 
   for (let i = 0; i < dates.length; i++) {
-    let date = dates[i];
-    let year = date.getFullYear();
-    let century = Math.floor(year / 100);
-    let month = date.getMonth();
-    let day = date.getDate();
-    let hour = date.getHours();
+    const date = dates[i];
+    const year = date.getFullYear();
+    const century = Math.floor(year / 100);
+    const month = date.getMonth();
+    const day = date.getDate();
+    const hour = date.getHours();
 
     // ObjectifiedDates
     if (!result[century]) {

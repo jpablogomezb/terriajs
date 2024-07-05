@@ -30,7 +30,6 @@ import TimeFilterTraits, {
 } from "../Traits/TraitsClasses/TimeFilterTraits";
 import DiscretelyTimeVaryingMixin from "./DiscretelyTimeVaryingMixin";
 import MappableMixin, { ImageryParts } from "./MappableMixin";
-import TimeVarying from "./TimeVarying";
 
 type BaseType = Model<TimeFilterTraits> & MappableMixin.Instance;
 
@@ -162,7 +161,7 @@ function TimeFilterMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
       if (!MappableMixin.isMixedInto(this)) return [];
       return filterOutUndefined(
         this.mapItems.map(
-          // @ts-ignore
+          // @ts-expect-error
           (mapItem) => ImageryParts.is(mapItem) && mapItem.imageryProvider.url
         )
       );
@@ -228,6 +227,7 @@ function TimeFilterMixin<T extends AbstractConstructor<BaseType>>(Base: T) {
       }
 
       const position = feature.position.getValue(this.currentTimeAsJulianDate);
+      if (position === undefined) return;
       const cartographic = Ellipsoid.WGS84.cartesianToCartographic(position);
       const featureImageryUrl = this.imageryUrls.find(
         (url) => providerCoords[url]

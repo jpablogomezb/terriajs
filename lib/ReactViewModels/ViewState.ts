@@ -36,9 +36,10 @@ import {
   RelativePosition,
   TourPoint
 } from "./defaultTourPoints";
-import DisclaimerHandler from "./DisclaimerHandler";
 import SearchState from "./SearchState";
 import CatalogSearchProviderMixin from "../ModelMixins/SearchProviders/CatalogSearchProviderMixin";
+import { getMarkerCatalogItem } from "../Models/LocationMarkerUtils";
+import CzmlCatalogItem from "../Models/Catalog/CatalogItems/CzmlCatalogItem";
 
 export const DATA_CATALOG_NAME = "data-catalog";
 export const USER_DATA_NAME = "my-data";
@@ -259,7 +260,7 @@ export default class ViewState {
         return a.priority - b.priority;
       })
       .filter(
-        (tourPoint) => (<any>this.appRefs).get(tourPoint.appRefName)?.current
+        (tourPoint) => (this.appRefs as any).get(tourPoint.appRefName)?.current
       );
   }
   @action
@@ -369,9 +370,9 @@ export default class ViewState {
   private _mobileMenuSubscription: IReactionDisposer;
   private _storyPromptSubscription: IReactionDisposer;
   private _previewedItemIdSubscription: IReactionDisposer;
+  private _locationMarkerSubscription: IReactionDisposer;
   private _workbenchHasTimeWMSSubscription: IReactionDisposer;
   private _storyBeforeUnloadSubscription: IReactionDisposer;
-  private _disclaimerHandler: DisclaimerHandler;
 
   constructor(options: ViewStateOptions) {
     makeObservable(this);
@@ -447,8 +448,6 @@ export default class ViewState {
       }
     );
 
-    this._disclaimerHandler = new DisclaimerHandler(terria, this);
-
     this._workbenchHasTimeWMSSubscription = reaction(
       () => this.terria.workbench.hasTimeWMS,
       (hasTimeWMS: boolean) => {
@@ -472,6 +471,17 @@ export default class ViewState {
           if (!this.terria.getLocalProperty("storyPrompted")) {
             this.toggleFeaturePrompt("story", true, false);
           }
+        }
+      }
+    );
+
+    this._locationMarkerSubscription = reaction(
+      () => getMarkerCatalogItem(this.terria),
+      (item: CzmlCatalogItem | undefined) => {
+        if (item) {
+          terria.overlays.add(item);
+          /* dispose subscription after init */
+          this._locationMarkerSubscription();
         }
       }
     );
@@ -526,7 +536,7 @@ export default class ViewState {
     this._storyPromptSubscription();
     this._previewedItemIdSubscription();
     this._workbenchHasTimeWMSSubscription();
-    this._disclaimerHandler.dispose();
+    this._locationMarkerSubscription();
     this.searchState.dispose();
   }
 

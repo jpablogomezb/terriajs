@@ -100,7 +100,9 @@ class DiffTool extends React.Component<PropsType> {
         this.leftItem = leftItem;
         this.rightItem = rightItem;
       });
-    } catch {}
+    } catch {
+      /* eslint-disable-line no-empty */
+    }
   }
 
   @action
@@ -821,7 +823,9 @@ const DiffAccordionWrapper = styled(Box).attrs({
   min-height: 220px;
   // background: ${(p) => p.theme.dark};
   margin-left: ${(props) =>
-    props.isMapFullScreen ? 16 : parseInt(props.theme.workbenchWidth) + 40}px;
+    props.isMapFullScreen
+      ? 16
+      : parseInt(props.theme.workbenchWidth, 10) + 40}px;
   transition: margin-left 0.25s;
 `;
 
@@ -955,9 +959,9 @@ const LegendImage = function (props: any) {
       {...props}
       // Show the legend only if it loads successfully, so we start out hidden
       style={{ display: "none", marginTop: "4px" }}
-      // @ts-ignore
+      // @ts-expect-error
       onLoad={(e) => (e.target.style.display = "block")}
-      // @ts-ignore
+      // @ts-expect-error
       onError={(e) => (e.target.style.display = "none")}
     />
   );
@@ -1039,7 +1043,7 @@ function removeSplitItem(item: DiffableItem) {
 function doesFeatureBelongToItem(
   feature: TerriaFeature,
   item: DiffableItem
-): Boolean {
+): boolean {
   if (!MappableMixin.isMixedInto(item)) return false;
   const imageryProvider = feature.imageryLayer?.imageryProvider;
   if (imageryProvider === undefined) return false;

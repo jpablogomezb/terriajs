@@ -3,17 +3,17 @@ import {
   action,
   computed,
   isObservableArray,
-  observable,
-  runInAction,
-  toJS,
   makeObservable,
-  override
+  observable,
+  override,
+  runInAction,
+  toJS
 } from "mobx";
 import Mustache from "mustache";
 import URI from "urijs";
-import isDefined from "../../../Core/isDefined";
-import { JsonObject, isJsonObject } from "../../../Core/Json";
+import { JsonObject } from "../../../Core/Json";
 import TerriaError from "../../../Core/TerriaError";
+import isDefined from "../../../Core/isDefined";
 import CatalogFunctionJobMixin from "../../../ModelMixins/CatalogFunctionJobMixin";
 import CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
 import XmlRequestMixin from "../../../ModelMixins/XmlRequestMixin";
@@ -23,16 +23,15 @@ import { FeatureInfoTemplateTraits } from "../../../Traits/TraitsClasses/Feature
 import WebProcessingServiceCatalogFunctionJobTraits from "../../../Traits/TraitsClasses/WebProcessingServiceCatalogFunctionJobTraits";
 import CommonStrata from "../../Definition/CommonStrata";
 import CreateModel from "../../Definition/CreateModel";
-import createStratumInstance from "../../Definition/createStratumInstance";
 import LoadableStratum from "../../Definition/LoadableStratum";
-import { BaseModel } from "../../Definition/Model";
+import { BaseModel, ModelConstructorParameters } from "../../Definition/Model";
 import StratumFromTraits from "../../Definition/StratumFromTraits";
 import StratumOrder from "../../Definition/StratumOrder";
+import createStratumInstance from "../../Definition/createStratumInstance";
 import updateModelFromJson from "../../Definition/updateModelFromJson";
 import upsertModelFromJson from "../../Definition/upsertModelFromJson";
 import GeoJsonCatalogItem from "../CatalogItems/GeoJsonCatalogItem";
 import CatalogMemberFactory from "../CatalogMemberFactory";
-import { ModelConstructorParameters } from "../../Definition/Model";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
 
 const executeWpsTemplate = require("./ExecuteWpsTemplate.xml");
@@ -362,7 +361,7 @@ export default class WebProcessingServiceCatalogFunctionJob extends XmlRequestMi
         this.geoJsonItem = new GeoJsonCatalogItem(createGuid(), this.terria);
         updateModelFromJson(this.geoJsonItem, CommonStrata.user, {
           name: `${this.name} Input Features`,
-          // Use cesium primitives so we don't have to deal with feature picking/selection
+          // Use cesium primitives, so we don't have to deal with feature picking/selection
           forceCesiumPrimitives: true,
           geoJsonData: {
             type: "FeatureCollection",
@@ -370,10 +369,10 @@ export default class WebProcessingServiceCatalogFunctionJob extends XmlRequestMi
             totalFeatures: this.geojsonFeatures!.length
           }
         }).logError(
-          "Error ocurred while updating Input Features GeoJSON model JSON"
+          "Error occurred while updating Input Features GeoJSON model JSON"
         );
       });
-      (await this.geoJsonItem!.loadMapItems()).throwIfError;
+      (await this.geoJsonItem!.loadMapItems()).throwIfError();
     }
 
     runInAction(() => {
@@ -413,7 +412,7 @@ export default class WebProcessingServiceCatalogFunctionJob extends XmlRequestMi
    * Returns all the process outputs skipping process contexts and empty outputs
    */
   @computed get outputs() {
-    const wpsResponse = <any>this.wpsResponse;
+    const wpsResponse = this.wpsResponse as any;
     if (
       !wpsResponse ||
       !wpsResponse.ProcessOutputs ||
@@ -430,19 +429,19 @@ export default class WebProcessingServiceCatalogFunctionJob extends XmlRequestMi
 
   private async createCatalogItemFromJson(json: any) {
     let itemJson = json;
-    try {
-      if (
-        this.forceConvertResultsToV8 ||
-        // If startData.version has version 0.x.x - user catalog-converter to convert result
-        ("version" in itemJson &&
-          typeof itemJson.version === "string" &&
-          itemJson.version.startsWith("0"))
-      ) {
-        itemJson = await convertResultV7toV8(json);
-      }
-    } catch (e) {
-      throw e;
+
+    if (
+      this.forceConvertResultsToV8 ||
+      // If startData.version has version 0.x.x - user catalog-converter to convert result
+      ("version" in itemJson &&
+        typeof itemJson.version === "string" &&
+        itemJson.version.startsWith("0"))
+    ) {
+      itemJson = await convertResultV7toV8(json).catch((e) => {
+        throw e;
+      });
     }
+
     const catalogItem = upsertModelFromJson(
       CatalogMemberFactory,
       this.terria,
@@ -473,7 +472,7 @@ function formatOutputValue(title: string, value: string | undefined) {
   const values = value.split(",");
 
   return values.reduce(function (previousValue, currentValue) {
-    if (value.match(/[.\/](png|jpg|jpeg|gif|svg)/i)) {
+    if (value.match(/[./](png|jpg|jpeg|gif|svg)/i)) {
       return (
         previousValue +
         '<a href="' +
