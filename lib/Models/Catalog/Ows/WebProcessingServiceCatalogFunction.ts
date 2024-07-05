@@ -43,10 +43,18 @@ import RegionTypeParameter from "../../FunctionParameters/RegionTypeParameter";
 import StringParameter from "../../FunctionParameters/StringParameter";
 import proxyCatalogItemUrl from "../proxyCatalogItemUrl";
 import { ModelConstructorParameters } from "../../Definition/Model";
+
 import WebProcessingServiceCatalogFunctionJob from "./WebProcessingServiceCatalogFunctionJob";
+import NumberParameter from "../../FunctionParameters/NumberParameter";
 
 type AllowedValues = {
   Value?: string | string[];
+  Range?: Range;
+};
+
+type Range = {
+  MaximumValue?: number;
+  MinimumValue?: number;
 };
 
 type LiteralDataType = {
@@ -57,6 +65,7 @@ type LiteralData = {
   AllowedValues?: AllowedValues;
   AllowedValue?: AllowedValues;
   AnyValue?: unknown;
+  DefaultValue?: unknown;
   DataType?: LiteralDataType | string;
   dataType?: string;
 };
@@ -179,11 +188,13 @@ class WpsLoadableStratum extends LoadableStratum(
   }
 
   get storeSupported() {
-    return Boolean(this.processDescription.storeSupported);
+    const value = this.processDescription.storeSupported?.toLowerCase();
+    return value === "true" ? true : value === "false" ? false : undefined;
   }
 
   get statusSupported() {
-    return Boolean(this.processDescription.statusSupported);
+    const value = this.processDescription.statusSupported?.toLowerCase();
+    return value === "true" ? true : value === "false" ? false : undefined;
   }
 }
 
@@ -272,7 +283,7 @@ export default class WebProcessingServiceCatalogFunction extends XmlRequestMixin
   protected async createJob(id: string) {
     const job = new WebProcessingServiceCatalogFunctionJob(id, this.terria);
 
-    let dataInputs = filterOutUndefined(
+    const dataInputs = filterOutUndefined(
       await Promise.all(
         this.functionParameters
           .filter((p) => isDefined(p.value) && p.value !== null)
@@ -332,7 +343,7 @@ export default class WebProcessingServiceCatalogFunction extends XmlRequestMixin
   }
 
   async convertParameterToInput(parameter: FunctionParameter) {
-    let converter = parameterTypeToConverter(parameter);
+    const converter = parameterTypeToConverter(parameter);
 
     const result = converter?.parameterToInput(parameter);
     if (!isDefined(result)) {
@@ -364,6 +375,7 @@ const LiteralDataConverter = {
 
     const allowedValues =
       input.LiteralData.AllowedValues || input.LiteralData.AllowedValue;
+
     if (isDefined(allowedValues) && isDefined(allowedValues.Value)) {
       return new EnumerationParameter(catalogFunction, {
         ...options,
@@ -375,6 +387,20 @@ const LiteralDataConverter = {
           return { id };
         })
       });
+    } else if (isDefined(allowedValues) && isDefined(allowedValues.Range)) {
+      const np = new NumberParameter(catalogFunction, {
+        ...options
+      });
+
+      np.minimum = isDefined(allowedValues.Range.MinimumValue)
+        ? allowedValues.Range.MinimumValue
+        : np.minimum;
+      np.maximum = allowedValues.Range.MaximumValue;
+      np.defaultValue = isDefined(input.LiteralData.DefaultValue)
+        ? (input.LiteralData.DefaultValue as number)
+        : np.minimum;
+
+      return np;
     } else if (isDefined(input.LiteralData.AnyValue)) {
       let dtype: string | null = null;
       if (isDefined(input.LiteralData["dataType"])) {
@@ -403,14 +429,21 @@ const LiteralDataConverter = {
           ...options
         });
       } else if (dtype === "date") {
-        const dt = new DateParameter(catalogFunction, { ...options });
+        const dt = new DateParameter(catalogFunction, {
+          ...options,
+          clock: catalogFunction.terria.timelineClock
+        });
         dt.variant = "literal";
         return dt;
       } else if (dtype?.toLowerCase() === "datetime") {
-        const dt = new DateTimeParameter(catalogFunction, { ...options });
+        const dt = new DateTimeParameter(catalogFunction, {
+          ...options,
+          clock: catalogFunction.terria.timelineClock
+        });
         dt.variant = "literal";
         return dt;
       }
+
       // Assume its a string, if no literal datatype given
       return new StringParameter(catalogFunction, {
         ...options
@@ -419,7 +452,7 @@ const LiteralDataConverter = {
   },
   parameterToInput: function (parameter: FunctionParameter) {
     return {
-      inputValue: <string | undefined>parameter.value,
+      inputValue: parameter.value as string | undefined,
       inputType: "LiteralData"
     };
   }
@@ -444,7 +477,10 @@ const ComplexDateConverter = {
     if (schema !== "http://www.w3.org/TR/xmlschema-2/#date") {
       return undefined;
     }
-    const dparam = new DateParameter(catalogFunction, options);
+    const dparam = new DateParameter(catalogFunction, {
+      ...options,
+      clock: catalogFunction.terria.timelineClock
+    });
     dparam.variant = "complex";
     return dparam;
   },
@@ -477,7 +513,10 @@ const ComplexDateTimeConverter = {
     if (schema !== "http://www.w3.org/TR/xmlschema-2/#dateTime") {
       return undefined;
     }
-    const dt = new DateTimeParameter(catalogFunction, options);
+    const dt = new DateTimeParameter(catalogFunction, {
+      ...options,
+      clock: catalogFunction.terria.timelineClock
+    });
     dt.variant = "complex";
     return dt;
   },
@@ -514,8 +553,8 @@ const RectangleConverter = {
     ) {
       return undefined;
     }
-    var code = Reproject.crsStringToCode(input.BoundingBoxData.Default.CRS);
-    var usedCrs = input.BoundingBoxData.Default.CRS;
+    let code = Reproject.crsStringToCode(input.BoundingBoxData.Default.CRS);
+    let usedCrs = input.BoundingBoxData.Default.CRS;
     // Find out if Terria's CRS is supported.
     if (
       code !== Reproject.TERRIA_CRS &&
@@ -545,9 +584,8 @@ const RectangleConverter = {
     });
   },
   parameterToInput: function (functionParameter: FunctionParameter) {
-    const parameter = <RectangleParameter>functionParameter;
+    const parameter = functionParameter as RectangleParameter;
     const value = parameter.value;
-
     if (!isDefined(value)) {
       return;
     }
@@ -556,10 +594,10 @@ const RectangleConverter = {
     // We only support CRS84 and EPSG:4326
     if (parameter.crs.indexOf("crs84") !== -1) {
       // CRS84 uses long, lat rather that lat, long order.
-      bboxMinCoord1 = CesiumMath.toDegrees(value.west);
-      bboxMinCoord2 = CesiumMath.toDegrees(value.south);
-      bboxMaxCoord1 = CesiumMath.toDegrees(value.east);
-      bboxMaxCoord2 = CesiumMath.toDegrees(value.north);
+      bboxMinCoord1 = value.west;
+      bboxMinCoord2 = value.south;
+      bboxMaxCoord1 = value.east;
+      bboxMaxCoord2 = value.north;
       // Comfortingly known as WGS 84 longitude-latitude according to Table 3 in OGC 07-092r1.
       urn = "urn:ogc:def:crs:OGC:1.3:CRS84";
     } else {
@@ -567,10 +605,10 @@ const RectangleConverter = {
       // 4326 specified in version 6.6 of the EPSG database available at http://www.epsg.org/. That CRS specifies
       // the axis order as Latitude followed by Longitude.
       // We don't know about other URN versions, so are going to return 6.6 regardless of what was requested.
-      bboxMinCoord1 = CesiumMath.toDegrees(value.south);
-      bboxMinCoord2 = CesiumMath.toDegrees(value.west);
-      bboxMaxCoord1 = CesiumMath.toDegrees(value.north);
-      bboxMaxCoord2 = CesiumMath.toDegrees(value.east);
+      bboxMinCoord1 = value.south;
+      bboxMinCoord2 = value.west;
+      bboxMaxCoord1 = value.north;
+      bboxMaxCoord2 = value.east;
       urn = "urn:ogc:def:crs:EPSG:6.6:4326";
     }
 
@@ -634,8 +672,8 @@ const GeoJsonGeometryConverter = {
     if (!isDefined(parameter.value) || parameter.value === null) {
       return;
     }
-    return (<GeoJsonParameter>parameter).getProcessedValue(
-      (<GeoJsonParameter>parameter).value!
+    return (parameter as GeoJsonParameter).getProcessedValue(
+      (parameter as GeoJsonParameter).value!
     );
   }
 };
@@ -656,7 +694,7 @@ function simpleGeoJsonDataConverter(schemaType: string, klass: any) {
         return undefined;
       }
 
-      var schema = input.ComplexData.Default.Format.Schema;
+      const schema = input.ComplexData.Default.Format.Schema;
       if (schema.indexOf("http://geojson.org/geojson-spec.html#") !== 0) {
         return undefined;
       }

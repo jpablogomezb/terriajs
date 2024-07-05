@@ -361,9 +361,9 @@ describe("DimensionSelectorSection", function () {
       const group = section.root.findByType(SelectableDimensionGroup);
       expect(group.props.dim.type).toEqual("group");
 
-      const collapsible = group.children[0];
-
-      if (typeof collapsible === "string") throw "Invalid collapsible";
+      const collapsible: TestRenderer.ReactTestInstance = (
+        group.children[0] as any
+      ).children[0].children[0];
 
       const button = collapsible.children[0];
 

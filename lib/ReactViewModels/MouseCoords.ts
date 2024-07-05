@@ -9,19 +9,13 @@ import Intersections2D from "terriajs-cesium/Source/Core/Intersections2D";
 import CesiumMath from "terriajs-cesium/Source/Core/Math";
 import Ray from "terriajs-cesium/Source/Core/Ray";
 import TerrainProvider from "terriajs-cesium/Source/Core/TerrainProvider";
+import sampleTerrainMostDetailed from "terriajs-cesium/Source/Core/sampleTerrainMostDetailed";
 import isDefined from "../Core/isDefined";
-import JSEarthGravityModel1996 from "../Map/Vector/EarthGravityModel1996";
+import pickTriangle, { PickTriangleResult } from "../Map/Cesium/pickTriangle";
+import EarthGravityModel1996 from "../Map/Vector/EarthGravityModel1996";
 import prettifyCoordinates from "../Map/Vector/prettifyCoordinates";
 import prettifyProjection from "../Map/Vector/prettifyProjection";
 import Terria from "../Models/Terria";
-
-// TypeScript 3.6.3 can't tell JSEarthGravityModel1996 is a class and reports
-//   Cannot use namespace 'JSEarthGravityModel1996' as a type.ts(2709)
-// This is a dodgy workaround.
-class EarthGravityModel1996 extends JSEarthGravityModel1996 {}
-
-const sampleTerrainMostDetailed =
-  require("terriajs-cesium/Source/Core/sampleTerrainMostDetailed").default;
 
 interface Cancelable {
   cancel: () => void;
@@ -34,6 +28,13 @@ const scratchV2 = new Cartographic();
 const scratchIntersection = new Cartographic();
 const scratchBarycentric = new Cartesian3();
 const scratchCartographic = new Cartographic();
+const pickedTriangleScratch: PickTriangleResult = {
+  tile: undefined,
+  intersection: new Cartesian3(),
+  v0: new Cartesian3(),
+  v1: new Cartesian3(),
+  v2: new Cartesian3()
+};
 
 export default class MouseCoords {
   readonly geoidModel: EarthGravityModel1996;
@@ -96,7 +97,7 @@ export default class MouseCoords {
     const pickRay = camera.getPickRay(position, scratchRay);
     const globe = scene.globe;
     const pickedTriangle = isDefined(pickRay)
-      ? (<any>globe).pickTriangle(pickRay, scene)
+      ? pickTriangle(pickRay, scene, true, pickedTriangleScratch)
       : undefined;
     if (isDefined(pickedTriangle)) {
       // Get a fast, accurate-ish height every time the mouse moves.

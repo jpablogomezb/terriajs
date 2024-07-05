@@ -5,7 +5,6 @@ import URI from "urijs";
 import isDefined from "../../../Core/isDefined";
 import loadJson from "../../../Core/loadJson";
 import AutoRefreshingMixin from "../../../ModelMixins/AutoRefreshingMixin";
-import CatalogMemberMixin from "../../../ModelMixins/CatalogMemberMixin";
 import TableMixin from "../../../ModelMixins/TableMixin";
 import TableAutomaticStylesStratum from "../../../Table/TableAutomaticStylesStratum";
 import ApiRequestTraits from "../../../Traits/TraitsClasses/ApiRequestTraits";
@@ -131,7 +130,7 @@ export class ApiTableCatalogItem extends AutoRefreshingMixin(
             row["value"] = value; // add the id to the row's data
             row[this.idKey!] = id;
             if (columnMajorData.has(id)) {
-              let currentRow = columnMajorData.get(id);
+              const currentRow = columnMajorData.get(id);
               columnMajorData.set(id, { currentRow, ...value });
             } else {
               columnMajorData.set(id, row);
@@ -185,8 +184,21 @@ export class ApiTableCatalogItem extends AutoRefreshingMixin(
     this.apiResponses.forEach((response) => {
       this.columns.forEach((col, mappingIdx) => {
         if (!isDefined(col.name)) return;
-        // Append the new value to the correct column
-        columnMajorTable[mappingIdx].push(`${response[col.name] ?? ""}`);
+
+        // If ApiColumnTraits has a responseDataPath, use that to get the value
+        const dataPath = this.apiColumns.find(
+          (c) => c.name === col.name
+        )?.responseDataPath;
+
+        if (dataPath) {
+          columnMajorTable[mappingIdx].push(
+            `${getResponseDataPath(response, dataPath) ?? ""}`
+          );
+        }
+        // Otherwise, use column name as the path
+        else {
+          columnMajorTable[mappingIdx].push(`${response[col.name] ?? ""}`);
+        }
       });
     });
 

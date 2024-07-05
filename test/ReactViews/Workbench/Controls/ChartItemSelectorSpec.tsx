@@ -1,9 +1,6 @@
 import React from "react";
 import { act } from "react-dom/test-utils";
-import TestRenderer, {
-  ReactTestInstance,
-  ReactTestRenderer
-} from "react-test-renderer";
+import TestRenderer, { ReactTestRenderer } from "react-test-renderer";
 import ChartableMixin, {
   ChartItem
 } from "../../../../lib/ModelMixins/ChartableMixin";
@@ -27,11 +24,12 @@ class SomeChartableItem extends ChartableMixin(
     return [
       {
         item: this,
+        id: "zzz",
         name: "zzz",
         categoryName: "ZZZ",
         key: `key-zzz`,
         type: "line",
-        xAxis: { scale: "time" },
+        xAxis: { name: "Time", scale: "time" },
         points: [],
         domain: { x: [0, 100], y: [0, 50] },
         units: "time",
@@ -43,11 +41,12 @@ class SomeChartableItem extends ChartableMixin(
       } as ChartItem,
       {
         item: this,
+        id: "aaa",
         name: "aaa",
         categoryName: "AAA",
         key: `key-aaa`,
         type: "line",
-        xAxis: { scale: "time" },
+        xAxis: { name: "Time", scale: "time" },
         points: [],
         domain: { x: [0, 100], y: [0, 50] },
         units: "time",

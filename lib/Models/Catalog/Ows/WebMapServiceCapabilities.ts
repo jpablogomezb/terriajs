@@ -2,7 +2,7 @@ import { createTransformer } from "mobx-utils";
 import defined from "terriajs-cesium/Source/Core/defined";
 import isReadOnlyArray from "../../../Core/isReadOnlyArray";
 import loadXML from "../../../Core/loadXML";
-import TerriaError, { networkRequestError } from "../../../Core/TerriaError";
+import { networkRequestError } from "../../../Core/TerriaError";
 import xml2json from "../../../ThirdParty/xml2json";
 import { RectangleTraits } from "../../../Traits/TraitsClasses/MappableTraits";
 import {
@@ -132,7 +132,7 @@ type Mutable<T> = { -readonly [P in keyof T]: T[P] };
 export function getRectangleFromLayer(
   layer: CapabilitiesLayer
 ): StratumFromTraits<RectangleTraits> | undefined {
-  var egbb = layer.EX_GeographicBoundingBox; // required in WMS 1.3.0
+  const egbb = layer.EX_GeographicBoundingBox; // required in WMS 1.3.0
   if (egbb) {
     return {
       west: egbb.westBoundLongitude,
@@ -141,7 +141,7 @@ export function getRectangleFromLayer(
       north: egbb.northBoundLatitude
     };
   } else {
-    var llbb = layer.LatLonBoundingBox; // required in WMS 1.0.0 through 1.1.1
+    const llbb = layer.LatLonBoundingBox; // required in WMS 1.0.0 through 1.1.1
     if (llbb) {
       return {
         west: llbb.minx,
@@ -163,7 +163,7 @@ export default class WebMapServiceCapabilities {
     createTransformer((url: string) => {
       return Promise.resolve(loadXML(url)).then(function (capabilitiesXml) {
         const json = xml2json(capabilitiesXml);
-        if (!defined(json.Capability)) {
+        if (!capabilitiesXml || !defined(json.Capability)) {
           throw networkRequestError({
             title: "Invalid GetCapabilities",
             message:
@@ -312,7 +312,7 @@ export default class WebMapServiceCapabilities {
       if (Array.isArray(value)) {
         p.push(...value);
       } else if (value !== undefined) {
-        p.push(<TResultElement>value);
+        p.push(value as TResultElement);
       }
       return p;
     }, []);
