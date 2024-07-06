@@ -443,7 +443,7 @@
     "infoText": "<0>Drag and drop a file here to view it locally on the map</0><1>(it won’t be saved or uploaded to the internet)</1>",
     "back": "Back",
     "note": "<0>Note: </0>Data added in this way is not saved or made visible to others.",
-    "navScenarioValuation": "Explore Scenario Valuation"
+    "navScenarioValuation": "User Scenario Evaluation"
   },
   "search": {
     "resultsLabel": "Search Results",
