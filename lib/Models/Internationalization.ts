@@ -89,14 +89,8 @@ class Internationalization {
               [_lng]: string[],
               [namespace]: string[]
             ) {
-              if (namespace === "translation")
+              if (namespace === "translation") {
                 return `${terriajsResourcesBaseUrl}languages/{{lng}}/{{ns}}.json`;
-
-              if (
-                namespace === "languageOverrides" &&
-                isDefined(languageConfig.overridesBaseUrl)
-              ) {
-                return `${languageConfig.overridesBaseUrl}{{lng}}.json`;
               }
 
               if (namespace === "languageOverrides") {
