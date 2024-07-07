@@ -152,12 +152,7 @@ class Internationalization {
                 return `${languageConfig.overridesBaseUrl}{{lng}}.json`;
               }
 
-              // Change the path for "languageOverrides" namespace
-              if (namespace === "languageOverrides") {
-                return `/static/webgis/wwwroot/languages/{{lng}}/{{ns}}.json`;
-              }
-
-              return "languages/{{lng}}/{{ns}}.json";
+              return "/static/webgis/wwwroot/languages/{{lng}}/{{ns}}.json";
             },
             crossDomain: false
           },
